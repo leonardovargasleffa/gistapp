@@ -1,48 +1,65 @@
 //
-//  GistsTableViewController.swift
+//  GistCommentsTableViewController.swift
 //  Gist
 //
-//  Created by Leonardo Leffa on 25/03/20.
+//  Created by Leonardo Leffa on 30/03/20.
 //  Copyright © 2020 iMonster. All rights reserved.
 //
 
 import UIKit
 
-class GistsTableViewController: UITableViewController {
+class GistCommentsTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
-    var viewModel: GistsViewModel!
+    var gist: Gist!
+    @IBOutlet var tableView: UITableView!
+    var viewModel: GistCommentViewModel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.viewModel = GistsViewModel(self)
+
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+        self.tableView.rowHeight = UITableView.automaticDimension;
+        self.tableView.estimatedRowHeight = 134.0;
         
+        self.viewModel = GistCommentViewModel(self)
+        self.viewModel.clearComments()
+        self.getComments()
+        
+    }
+    
+    func getComments(){
+        self.viewModel.getGistComment(self.gist, { reload in
+            self.tableView.reloadData()
+        })
     }
 
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 0
-    }
-    
-    @IBAction func sair(){
-        self.viewModel.logoff()
+        return self.viewModel.listComments.count
     }
 
-    /*
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell: CommentTableViewCell = tableView.dequeueReusableCell(withIdentifier: "CommentTableViewCell", for: indexPath) as! CommentTableViewCell
+        cell.setComment(self.viewModel.listComments[indexPath.row])
         return cell
     }
-    */
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let lastItem = self.viewModel.listComments.count - 1
+        if indexPath.row == lastItem {
+            if self.viewModel.listComments.count >= (self.viewModel.page*self.viewModel.perPage) {
+                self.getComments()
+            }
+        }
+    }
 
     /*
     // Override to support conditional editing of the table view.

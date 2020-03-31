@@ -9,16 +9,11 @@
 import UIKit
 
 class LoginViewModel: DefaultViewModel {
-    var controller: UIViewController!
-    
     init(_ controller: UIViewController) {
         super.init(controller, {})
-        
-        self.controller = controller;
-        
         WebService.sharedInstance.githubLogged = { error in
             if error == nil {
-                controller.performSegue(withIdentifier: "GistsTableViewController", sender: nil)
+                self.controller.performSegue(withIdentifier: "GistsTableViewController", sender: nil)
             }
         };
     }

@@ -55,6 +55,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if (url.absoluteString.contains("gistoauthcallback")) {
                 WebService.sharedInstance.processOAuthResponse(url: url)
             }
+        
+        if (url.absoluteString.contains("gistopen")) {
+              WebService.sharedInstance.processGistURL(url: url)
+        }
     }
 
 }

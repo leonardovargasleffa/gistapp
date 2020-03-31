@@ -29,7 +29,7 @@ class Gist: Mappable {
     var comments_url: String!
     var owner: User!
     var truncated: String!
-    var files: Dictionary<String, Files>!
+    var files: Dictionary<String, Files>?
     
     required init?(map: Map){}
     

@@ -28,5 +28,6 @@ class LoginViewController: UIViewController, SFSafariViewControllerDelegate {
     @IBAction func didTapLoginButton() {
         UIApplication.shared.open(self.viewModel.getUrlGithub())
     }
+    
 }
 

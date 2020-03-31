@@ -9,6 +9,7 @@
 import UIKit
 import ObjectMapper
 import AlamofireObjectMapper
+import Alamofire
 
 class Files: Mappable {
 
@@ -16,6 +17,7 @@ class Files: Mappable {
     var type: String!
     var language: String!
     var raw_url: String!
+    var content: String?
     var size: Int!
     
     required init?(map: Map){}
@@ -26,6 +28,6 @@ class Files: Mappable {
         language <- map["language"]
         raw_url <- map["raw_url"]
         size <- map["size"]
+        content <- map["content"]
     }
-    
 }

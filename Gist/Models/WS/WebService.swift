@@ -14,7 +14,6 @@ import AlamofireObjectMapper
 import SwiftyJSON
 
 enum Error: String, Swift.Error {
-    
     case generic
     case unauthorized
     
@@ -100,6 +99,104 @@ class WebService: NSObject {
             })
             
             return Disposables.create()
+        }
+    }
+    
+    func commentGist(_ gist_id: String, _ comment: String) -> Observable<Comment> {
+           
+        return Observable<Comment>.create { observer -> Disposable in
+            
+            let headers: HTTPHeaders = [
+                "Authorization": self.getAuthHeader()
+            ]
+            
+         Alamofire.request("https://api.github.com/gists/\(gist_id)/comments", method: .post, parameters: ["body": comment], headers: headers).responseObject { (response: DataResponse<Comment>) in
+                    
+                    guard let gists = response.result.value else {
+                        observer.on(.error(Error.generic))
+                        return
+                    }
+                    
+                    observer.on(.next(gists))
+                    observer.on(.completed)
+            }
+            
+            return Disposables.create()
+        }
+    }
+    
+    func getGistComments(_ gist_id: String, _ page: Int, _ perPage: Int) -> Observable<[Comment]> {
+           
+        return Observable<[Comment]>.create { observer -> Disposable in
+            
+            let headers: HTTPHeaders = [
+                "Authorization": self.getAuthHeader()
+            ]
+            
+         Alamofire.request("https://api.github.com/gists/\(gist_id)/comments?page=\(page)&perPage=\(perPage)", method: .get, parameters: [:], headers: headers).responseArray { (response: DataResponse<[Comment]>) in
+                    
+                    guard let gists = response.result.value else {
+                        observer.on(.error(Error.generic))
+                        return
+                    }
+                    
+                    observer.on(.next(gists))
+                    observer.on(.completed)
+            }
+            
+            return Disposables.create()
+        }
+    }
+    
+    func getGist(_ gist_id: String) -> Observable<Gist> {
+           
+        return Observable<Gist>.create { observer -> Disposable in
+            
+            let headers: HTTPHeaders = [
+                "Authorization": self.getAuthHeader()
+            ]
+            
+         Alamofire.request("https://api.github.com/gists/\(gist_id)", method: .get, parameters: [:], headers: headers).responseObject { (response: DataResponse<Gist>) in
+                    
+                    guard let gists = response.result.value else {
+                        observer.on(.error(Error.generic))
+                        return
+                    }
+                    
+                    observer.on(.next(gists))
+                    observer.on(.completed)
+            }
+            
+            return Disposables.create()
+        }
+    }
+    
+    func getGists(publicGists: Bool, _ page: Int, _ perPage: Int) -> Observable<Array<Gist>> {
+              
+           return Observable<Array<Gist>>.create { observer -> Disposable in
+               
+               let headers: HTTPHeaders = [
+                   "Authorization": self.getAuthHeader()
+               ]
+               
+            Alamofire.request("https://api.github.com/gists\(publicGists ? "/public" : "")?page=\(page)&perPage=\(perPage)", method: .get, parameters: [:], headers: headers).responseArray { (response: DataResponse<[Gist]>) in
+                       
+                       guard let gists = response.result.value else {
+                           observer.on(.error(Error.generic))
+                           return
+                       }
+                       
+                       observer.on(.next(gists))
+                       observer.on(.completed)
+               }
+               
+               return Disposables.create()
+           }
+       }
+    
+    func processGistURL(url: URL){
+        if let gistid = url.absoluteString.components(separatedBy: "gistopen://").dropFirst().first {
+            NotificationCenter.default.post(name: Notification.Name("receiveGistID"), object: gistid, userInfo: [:])
         }
     }
     

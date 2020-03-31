@@ -3,7 +3,20 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "closure #2 in GistsViewModel.init(_:):GistsViewModel.swift">
+         contextName = "LoginViewController.didTapLoginButton():LoginViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "WebService.sharedInstance.OAuthURL()">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in GistsTableViewController.getGists():GistsTableViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.viewModel.listGists.count">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "LoginViewModel.loggedIn():LoginViewModel.swift">
@@ -14,13 +27,13 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "closure #1 in WebService.getGitHubUserData():WebService.swift">
-      </ContextState>
-      <ContextState
-         contextName = "LoginViewController.didTapLoginButton():LoginViewController.swift">
+         contextName = "closure #1 in closure #1 in WebService.getGitHubUserData():WebService.swift">
          <PersistentStrings>
             <PersistentString
-               value = "WebService.sharedInstance.OAuthURL()">
+               value = "response.result.value">
+            </PersistentString>
+            <PersistentString
+               value = "self.getAuthHeader()">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -36,6 +49,33 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "mach_msg_trap:(null)">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.code.textView.gutterHeight">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "SceneDelegate.scene(_:willConnectTo:options:):SceneDelegate.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "WebService.sharedInstance.loggedIn()">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in closure #1 in WebService.getGists(publicGists:_:_:):WebService.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "response.result.value">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in WebService.getGitHubUserData():WebService.swift">
+      </ContextState>
+      <ContextState
          contextName = "closure #1 in WebService.processOAuthResponse(url:):WebService.swift">
          <PersistentStrings>
             <PersistentString
@@ -44,15 +84,27 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "closure #1 in closure #1 in WebService.getGitHubUserData():WebService.swift">
+         contextName = "closure #1 in GistsViewModel.getPublicGists(_:):GistsViewModel.swift">
+      </ContextState>
+      <ContextState
+         contextName = "CodeTableViewCell.setFile(_:):CodeTableViewCell.swift">
          <PersistentStrings>
             <PersistentString
-               value = "response.result.value">
+               value = "self.code.contentTextView.bounds">
             </PersistentString>
             <PersistentString
-               value = "self.getAuthHeader()">
+               value = "self.code.textView.contentSize">
+            </PersistentString>
+            <PersistentString
+               value = "self.code.bounds">
+            </PersistentString>
+            <PersistentString
+               value = "self.code.textView.gutterHeight">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #2 in GistsViewModel.init(_:):GistsViewModel.swift">
       </ContextState>
    </ContextStates>
 </VariablesViewState>
