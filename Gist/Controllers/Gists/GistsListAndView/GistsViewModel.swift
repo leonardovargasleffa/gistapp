@@ -46,17 +46,6 @@ class GistsViewModel: DefaultViewModel {
         }
     }
     
-    func getUser(_ user: @escaping ((_ usr: User?) -> Void)) {
-        self.showLoading()
-        WebService.sharedInstance.getGitHubUserData().subscribe(onNext: { [weak self] (start) in
-            self!.stopLoading()
-            user(start)
-        }, onError: { (error) in
-            self.stopLoading()
-            user(nil)
-        }).disposed(by: self.disposeBag)
-    }
-    
     func setData(_ start: [Gist]){
         if(self.listGists.count > 0){
             self.listGists.append(contentsOf: start)

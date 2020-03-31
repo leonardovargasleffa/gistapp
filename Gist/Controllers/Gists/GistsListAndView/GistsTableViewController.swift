@@ -51,7 +51,11 @@ class GistsTableViewController: UIViewController, UITableViewDelegate, UITableVi
 
     func getGists(){
         self.viewModel.getGists(self.publicGists, { reload in
-            self.tableView.reloadData()
+            if reload {
+                self.tableView.reloadData()
+            } else {
+                "There was a problem on get Gists, try again!".errorAlert(self)
+            }
         })
     }
     
@@ -79,7 +83,7 @@ class GistsTableViewController: UIViewController, UITableViewDelegate, UITableVi
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let lastItem = self.viewModel.listGists.count - 1
         if indexPath.row == lastItem {
-            if self.viewModel.listGists.count >= (self.viewModel.page*self.viewModel.perPage) {
+            if self.viewModel.listGists.count >= ((self.viewModel.page-1)*self.viewModel.perPage) {
                 self.getGists()
             }
         }
@@ -91,9 +95,7 @@ class GistsTableViewController: UIViewController, UITableViewDelegate, UITableVi
             self.performSegue(withIdentifier: "GistViewController", sender: gist.id)
             
         } else {
-            let alert = UIAlertController(title: "Ops!", message: "This gist has no files!", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-            self.present(alert, animated: true)
+            "This gist has no files!".errorAlert(self)
         }
     }
 

@@ -24,8 +24,8 @@ class CodeTableViewCell: UITableViewCell {
                 options: [:],
                 documentAttributes: nil)
             self.code.attributedText = attrStr
-        } catch let error {
-
+        } catch let _ {
+            
         }
     }
 

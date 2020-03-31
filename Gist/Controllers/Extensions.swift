@@ -30,6 +30,12 @@ extension UIImageView {
 }
 
 extension String {
+    func errorAlert(_ controller: UIViewController) {
+        let alert = UIAlertController(title: "Ops!", message: self, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler:nil))
+        controller.present(alert, animated: true, completion: nil)
+    }
+    
     func timeAgo() -> String {
         
         let dateFormatter = DateFormatter()

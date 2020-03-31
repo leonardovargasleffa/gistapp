@@ -15,23 +15,18 @@ import SwiftyJSON
 
 enum Error: String, Swift.Error {
     case generic
-    case unauthorized
     
     var code: Int {
         switch self {
             case .generic:
                 return 201
-            case .unauthorized:
-                return 401
         }
     }
     
     var message: String {
         switch self {
             case .generic:
-                return "Houve um erro. Tente novamente"
-            case .unauthorized:
-                return "Houve um erro. Faça o Login Novamente."
+                return "There was a problem, try again!"
         }
     }
     
@@ -74,17 +69,18 @@ class WebService: NSObject {
         }
     }
     
-    func getAuthHeader() -> String {
-        return "Bearer \(UserDefaults.standard.value(forKey: "github_access_token")!)"
+    func getAuthHeader() -> HTTPHeaders {
+        return [
+            "Authorization": "Bearer \(UserDefaults.standard.value(forKey: "github_access_token")!)",
+            "Cache-Control": "max-age=0"
+        ]
     }
     
     func getGitHubUserData() -> Observable<User> {
            
         return Observable<User>.create { observer -> Disposable in
             
-            let headers: HTTPHeaders = [
-                "Authorization": self.getAuthHeader()
-            ]
+            let headers: HTTPHeaders = self.getAuthHeader()
             
             Alamofire.request("https://api.github.com/user", method: .get, parameters: [:], headers: headers)
                 .responseObject(completionHandler: { (response: DataResponse<User>) in
@@ -106,18 +102,57 @@ class WebService: NSObject {
            
         return Observable<Comment>.create { observer -> Disposable in
             
-            let headers: HTTPHeaders = [
-                "Authorization": self.getAuthHeader()
-            ]
+            let headers: HTTPHeaders = self.getAuthHeader()
             
-         Alamofire.request("https://api.github.com/gists/\(gist_id)/comments", method: .post, parameters: ["body": comment], headers: headers).responseObject { (response: DataResponse<Comment>) in
+            Alamofire.request("https://api.github.com/gists/\(gist_id)/comments", method: .post, parameters: ["body": comment], encoding: JSONEncoding.default, headers: headers).responseObject { (response: DataResponse<Comment>) in
                     
-                    guard let gists = response.result.value else {
+                    guard let comment = response.result.value else {
                         observer.on(.error(Error.generic))
                         return
                     }
                     
-                    observer.on(.next(gists))
+                    observer.on(.next(comment))
+                    observer.on(.completed)
+            }
+            
+            return Disposables.create()
+        }
+    }
+    
+    func deleteCommentGist(_ gist_id: String, _ comment_id: Int) -> Observable<Bool> {
+           
+        return Observable<Bool>.create { observer -> Disposable in
+            
+            let headers: HTTPHeaders = self.getAuthHeader()
+            
+            Alamofire.request("https://api.github.com/gists/\(gist_id)/comments/\(comment_id)", method: .delete, headers: headers).responseString { (response: DataResponse<String>) in
+                
+                if response.response?.statusCode == 204 {
+                    observer.on(.next(true))
+                } else {
+                    observer.on(.next(false))
+                }
+                observer.on(.completed)
+            }
+            
+            return Disposables.create()
+        }
+    }
+    
+    func updateCommentGist(_ gist_id: String, _ comment_id: Int, _ comment: String) -> Observable<Comment> {
+           
+        return Observable<Comment>.create { observer -> Disposable in
+            
+            let headers: HTTPHeaders = self.getAuthHeader()
+            
+            Alamofire.request("https://api.github.com/gists/\(gist_id)/comments/\(comment_id)", method: .patch, parameters: ["body": comment], encoding: JSONEncoding.default, headers: headers).responseObject { (response: DataResponse<Comment>) in
+                    
+                    guard let comment = response.result.value else {
+                        observer.on(.error(Error.generic))
+                        return
+                    }
+                    
+                    observer.on(.next(comment))
                     observer.on(.completed)
             }
             
@@ -129,11 +164,9 @@ class WebService: NSObject {
            
         return Observable<[Comment]>.create { observer -> Disposable in
             
-            let headers: HTTPHeaders = [
-                "Authorization": self.getAuthHeader()
-            ]
+            let headers: HTTPHeaders = self.getAuthHeader()
             
-         Alamofire.request("https://api.github.com/gists/\(gist_id)/comments?page=\(page)&perPage=\(perPage)", method: .get, parameters: [:], headers: headers).responseArray { (response: DataResponse<[Comment]>) in
+         Alamofire.request("https://api.github.com/gists/\(gist_id)/comments?page=\(page)&per_page=\(perPage)", method: .get, parameters: [:], headers: headers).responseArray { (response: DataResponse<[Comment]>) in
                     
                     guard let gists = response.result.value else {
                         observer.on(.error(Error.generic))
@@ -152,9 +185,7 @@ class WebService: NSObject {
            
         return Observable<Gist>.create { observer -> Disposable in
             
-            let headers: HTTPHeaders = [
-                "Authorization": self.getAuthHeader()
-            ]
+            let headers: HTTPHeaders = self.getAuthHeader()
             
          Alamofire.request("https://api.github.com/gists/\(gist_id)", method: .get, parameters: [:], headers: headers).responseObject { (response: DataResponse<Gist>) in
                     
@@ -175,11 +206,9 @@ class WebService: NSObject {
               
            return Observable<Array<Gist>>.create { observer -> Disposable in
                
-               let headers: HTTPHeaders = [
-                   "Authorization": self.getAuthHeader()
-               ]
+               let headers: HTTPHeaders = self.getAuthHeader()
                
-            Alamofire.request("https://api.github.com/gists\(publicGists ? "/public" : "")?page=\(page)&perPage=\(perPage)", method: .get, parameters: [:], headers: headers).responseArray { (response: DataResponse<[Gist]>) in
+            Alamofire.request("https://api.github.com/gists\(publicGists ? "/public" : "")?page=\(page)&per_page=\(perPage)", method: .get, parameters: [:], headers: headers).responseArray { (response: DataResponse<[Gist]>) in
                        
                        guard let gists = response.result.value else {
                            observer.on(.error(Error.generic))
@@ -216,16 +245,17 @@ class WebService: NSObject {
                                 UserDefaults.standard.setValue(token, forKey: "github_access_token")
                                 self.githubLogged(nil);
                             }
+                            
                         } else {
-                            self.githubLogged("Não foi possivel efetuar login!");
+                            self.githubLogged(Error.generic.message);
                         }
                         
                     } else {
-                        self.githubLogged("Não conseguiu buscar o token!");
+                        self.githubLogged(Error.generic.message);
                     }
                     
                 } else {
-                    self.githubLogged("Erro na requisição!");
+                    self.githubLogged(Error.generic.message);
                 }
         }
     }

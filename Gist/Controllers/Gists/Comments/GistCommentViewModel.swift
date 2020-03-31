@@ -29,20 +29,21 @@ class GistCommentViewModel: DefaultViewModel {
         }
     }
     
+    func getComments() -> [Comment] {
+        return self.listComments;
+    }
+    
     func clearComments(){
         self.listComments = []
         self.page = 1
     }
     
-    func getUser(_ user: @escaping ((_ usr: User?) -> Void)) {
-        self.showLoading()
-        WebService.sharedInstance.getGitHubUserData().subscribe(onNext: { [weak self] (start) in
-            self!.stopLoading()
-            user(start)
-        }, onError: { (error) in
-            self.stopLoading()
-            user(nil)
-        }).disposed(by: self.disposeBag)
+    func deleteComment(_ indexPath: IndexPath){
+        self.listComments.remove(at: indexPath.row)
+    }
+    
+    func setCommentIndex(_ comment: Comment, _ indexPath: IndexPath){
+        self.listComments[indexPath.row] = comment;
     }
     
     func setData(_ start: [Comment]){
@@ -74,6 +75,28 @@ class GistCommentViewModel: DefaultViewModel {
         }, onError: { (error) in
             self.stopLoading()
             gists(nil)
+        }).disposed(by: self.disposeBag)
+    }
+    
+    func updateCommentGist(_ gist: Gist, _ comment: Comment, _ body: String, _ gists: @escaping ((_ gists: Comment?) -> Void)){
+        self.showLoading()
+        WebService.sharedInstance.updateCommentGist(gist.id, comment.id, body).subscribe(onNext: { [weak self] (start) in
+            self!.stopLoading()
+            gists(start)
+        }, onError: { (error) in
+            self.stopLoading()
+            gists(nil)
+        }).disposed(by: self.disposeBag)
+    }
+    
+    func deleteCommentGist(_ gist: Gist, _ comment: Comment, _ gists: @escaping ((_ gists: Bool) -> Void)){
+        self.showLoading()
+        WebService.sharedInstance.deleteCommentGist(gist.id, comment.id).subscribe(onNext: { [weak self] (start) in
+            self!.stopLoading()
+            gists(start)
+        }, onError: { (error) in
+            self.stopLoading()
+            gists(false)
         }).disposed(by: self.disposeBag)
     }
 }

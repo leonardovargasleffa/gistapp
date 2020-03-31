@@ -31,6 +31,8 @@ class GistViewController: UIViewController, UITableViewDelegate, UITableViewData
             if let gistGet = gist {
                 self.gist = gistGet
                 self.tableView.reloadData()
+            } else {
+                "There was a problem on get Gist, try again!".errorAlert(self)
             }
         })
         // Do any additional setup after loading the view.

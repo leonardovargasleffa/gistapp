@@ -14,6 +14,8 @@ class LoginViewModel: DefaultViewModel {
         WebService.sharedInstance.githubLogged = { error in
             if error == nil {
                 self.controller.performSegue(withIdentifier: "GistsTableViewController", sender: nil)
+            } else {
+                (error!).errorAlert(self.controller)
             }
         };
     }

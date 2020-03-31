@@ -118,6 +118,7 @@
 			children = (
 				BAA58D792432BBBE00E6DE0A /* Lib */,
 				BA974B71242C17840025634E /* Controllers */,
+				BA974B7F242C1B7D0025634E /* WS */,
 				BA974B70242C17750025634E /* Models */,
 				BA974B5C242C162C0025634E /* AppDelegate.swift */,
 				BAD7E10C2432E01A0086FD2A /* SceneDelegate.swift */,
@@ -132,7 +133,6 @@
 		BA974B70242C17750025634E /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				BA974B7F242C1B7D0025634E /* WS */,
 				BA974B7E242C1B730025634E /* Objects */,
 			);
 			path = Models;

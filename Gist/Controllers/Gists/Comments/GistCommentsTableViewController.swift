@@ -13,10 +13,10 @@ class GistCommentsTableViewController: UIViewController, UITableViewDelegate, UI
     var gist: Gist!
     @IBOutlet var tableView: UITableView!
     var viewModel: GistCommentViewModel!
+    var newComment: UITextField?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.rowHeight = UITableView.automaticDimension;
@@ -30,8 +30,79 @@ class GistCommentsTableViewController: UIViewController, UITableViewDelegate, UI
     
     func getComments(){
         self.viewModel.getGistComment(self.gist, { reload in
-            self.tableView.reloadData()
+            if reload {
+                self.tableView.reloadData()
+                
+            } else {
+                "There was a problem on get Comments".errorAlert(self)
+            }
         })
+    }
+
+    func configurationTextField(textField: UITextField!) {
+        if (textField) != nil {
+            self.newComment = textField!        //Save reference to the UITextField
+            self.newComment?.placeholder = "Comment...";
+        }
+    }
+    
+    func ask(_ index: IndexPath){
+        let alert = UIAlertController(title: "Comment options", message: "What you do in this comment?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:nil))
+        alert.addAction(UIAlertAction(title: "Delete", style: .default, handler:{ (UIAlertAction) in
+            self.viewModel.deleteCommentGist(self.gist, self.viewModel.getComments()[index.row]) { (deleted) in
+                if deleted {
+                    self.viewModel.deleteComment(index)
+                    self.tableView.reloadData()
+                    
+                } else {
+                    "There was a problem on delete commenting".errorAlert(self)
+                }
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "Edit", style: .default, handler:{ (UIAlertAction) in
+            self.alterComment(index)
+        }))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func alterComment(_ index: IndexPath?) {
+        let alert = UIAlertController(title: "New Comment", message: "Type our comment", preferredStyle: .alert)
+        alert.addTextField(configurationHandler: configurationTextField)
+        
+        if index != nil {
+            self.newComment!.text = self.viewModel.getComments()[index!.row].body
+        }
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:nil))
+        alert.addAction(UIAlertAction(title: (index != nil ? "Save" : "Comment"), style: .default, handler:{ (UIAlertAction) in
+            if let indexPath = index {
+                self.viewModel.updateCommentGist(self.gist, self.viewModel.listComments[indexPath.row], self.newComment!.text!) { (comment) in
+                    if comment != nil {
+                        self.viewModel.setCommentIndex(comment!, indexPath)
+                        self.tableView.reloadData()
+                        
+                    } else {
+                        "There was a problem on update commenting".errorAlert(self)
+                    }
+                }
+                
+            } else {
+                self.viewModel.commentGist(self.gist, self.newComment!.text!) { (comment) in
+                    if comment != nil {
+                        self.getComments()
+                        
+                    } else {
+                        "There was a problem commenting".errorAlert(self)
+                    }
+                }
+            }
+        }))
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    @IBAction func alertNewComment() {
+        self.alterComment(nil)
     }
 
     // MARK: - Table view data source
@@ -43,19 +114,25 @@ class GistCommentsTableViewController: UIViewController, UITableViewDelegate, UI
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return self.viewModel.listComments.count
+        return self.viewModel.getComments().count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: CommentTableViewCell = tableView.dequeueReusableCell(withIdentifier: "CommentTableViewCell", for: indexPath) as! CommentTableViewCell
-        cell.setComment(self.viewModel.listComments[indexPath.row])
+        cell.setComment(self.viewModel.getComments()[indexPath.row])
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if(self.viewModel.user.id == self.viewModel.getComments()[indexPath.row].user.id){
+            self.ask(indexPath)
+        }
+    }
+    
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let lastItem = self.viewModel.listComments.count - 1
+        let lastItem = self.viewModel.getComments().count - 1
         if indexPath.row == lastItem {
-            if self.viewModel.listComments.count >= (self.viewModel.page*self.viewModel.perPage) {
+            if self.viewModel.getComments().count >= ((self.viewModel.page-1)*self.viewModel.perPage) {
                 self.getComments()
             }
         }

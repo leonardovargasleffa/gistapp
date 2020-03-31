@@ -261,7 +261,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CommentTableViewCell" rowHeight="111" id="p8s-zZ-BIK" customClass="CommentTableViewCell" customModule="Gist" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="CommentTableViewCell" rowHeight="111" id="p8s-zZ-BIK" customClass="CommentTableViewCell" customModule="Gist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="111"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="p8s-zZ-BIK" id="hsn-k5-4Cy">
@@ -332,7 +332,7 @@
                     <navigationItem key="navigationItem" id="HoY-Gq-N0j">
                         <barButtonItem key="rightBarButtonItem" systemItem="compose" id="8ti-Q3-IWg">
                             <connections>
-                                <action selector="createComment:" destination="oZg-Hk-YoL" id="DXV-r1-02C"/>
+                                <action selector="alertNewComment" destination="oZg-Hk-YoL" id="RVG-6f-41M"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
